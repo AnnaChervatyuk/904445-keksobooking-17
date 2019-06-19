@@ -23,9 +23,9 @@ var getRandomNumber = function (min, max) {
   return randomNumber;
 };
 
-var createOffers = function () {
+var createOffers = function (offerQuantity) {
   var arrayOffers = [];
-  for (var i = 0; i < OFFER_QUANTITY; i++) {
+  for (var i = 0; i < offerQuantity; i++) {
     arrayOffers.push({
       'author': {
         'avatar': 'img/avatars/user0' + (i + 1) + '.png'
@@ -52,11 +52,14 @@ var createPinMock = function (pinInfo) {
   return pinMock;
 };
 
-var allOffers = createOffers();
+var allOffers = createOffers(OFFER_QUANTITY);
 
-var fragment = document.createDocumentFragment();
-for (var i = 0; i < OFFER_QUANTITY; i++) {
-  fragment.appendChild(createPinMock(allOffers[i]));
-}
+var getPins = function () {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < OFFER_QUANTITY; i++) {
+    fragment.appendChild(createPinMock(allOffers[i]));
+  }
+  pinList.appendChild(fragment);
+};
 
-pinList.appendChild(fragment);
+getPins();
