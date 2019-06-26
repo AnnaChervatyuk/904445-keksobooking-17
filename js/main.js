@@ -4,14 +4,14 @@ var TYPE_OFFER = ['palace', 'flat', 'house', 'bungalo'];
 var OFFER_QUANTITY = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var MAIN_PIN_HEIGHT = 87;
+var MAIN_PIN_WIDTH = 65;
 var MIN_PIN_COORDS_Y = 130;
 var MAX_PIN_COORDS_Y = 630;
 var MIN_PIN_COORDS_X = 0;
 var MAX_PIN_COORDS_X = document.querySelector('.map__pins').clientWidth;
-var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
-var pinList = document.querySelector('.map__pins');
+var DISABLED_ELEMENTS = document.querySelectorAll('.ad-form fieldset, .map__filters select, .map__filters fieldset');
 
-document.querySelector('.map').classList.remove('map--faded');
 
 var getRandomElement = function () {
   var randomElement = Math.floor(Math.random() * TYPE_OFFER.length);
@@ -42,6 +42,11 @@ var createOffers = function (offerQuantity) {
   return arrayOffers;
 };
 
+function getMainAddress(width, height) {
+  var x = MAX_PIN_COORDS_X - width / 2;
+  var y = MAX_PIN_COORDS_Y - height;
+  return (x + ', ' + y);
+}
 
 var createPinMock = function (pinInfo) {
   var pinMock = templatePin.cloneNode(true);
@@ -62,4 +67,33 @@ var getPins = function () {
   pinList.appendChild(fragment);
 };
 
+function getDisabledElements(arr) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i].disabled = true;
+  }
+}
+
+function getEnabledElements(arr) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i].disabled = false;
+  }
+}
+
+var pinMain = document.querySelector('.map__pin--main');
+var activePage = false;
+var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
+var pinList = document.querySelector('.map__pins');
+
+pinMain.addEventListener('click', function () {
+  if (!activePage) {
+    getEnabledElements(DISABLED_ELEMENTS);
+    document.querySelector('.map').classList.remove('map--faded');
+    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+    activePage = true;
+  }
+});
+
+document.querySelector('#address').value = getMainAddress(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
+
+getDisabledElements(DISABLED_ELEMENTS);
 getPins();
