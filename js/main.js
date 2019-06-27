@@ -89,6 +89,11 @@ function getTimeElement(firstTimeElement, secondTimeElement) {
   secondTimeElement.value = firstTimeElement.options[firstTimeElement.selectedIndex].value;
 }
 
+function checkPrice() {
+  minPrice.setCustomValidity('');
+}
+
+
 var pinMain = document.querySelector('.map__pin--main');
 var activePage = false;
 var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -112,6 +117,7 @@ selectTypeFlat.addEventListener('change', function () {
   var priceTypeFlat = PRICES_FLATS[valueFlat];
   minPrice.placeholder = priceTypeFlat;
   minPrice.min = priceTypeFlat;
+  checkPrice();
 });
 
 timeIn.addEventListener('change', function () {
