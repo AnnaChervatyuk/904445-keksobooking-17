@@ -93,8 +93,15 @@ function checkPrice() {
   minPrice.setCustomValidity('');
 }
 
+function getMainAddressNew(width, height, pin, shift) {
+  var x = (pin.offsetLeft - shift.x) + width / 2;
+  var y = (pin.offsetTop - shift.y) + height;
+  return (x + ', ' + y);
+}
 
-var pinMain = document.querySelector('.map__pin--main');
+
+// var pinMain = document.querySelector('.map__pin--main');
+var pinMainHandler = document.querySelector('.map__pin--main');
 var activePage = false;
 var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
 var pinList = document.querySelector('.map__pins');
@@ -102,15 +109,68 @@ var selectTypeFlat = document.querySelector('#type');
 var minPrice = document.querySelector('#price');
 var timeIn = document.querySelector('#timein');
 var timeOut = document.querySelector('#timeout');
+var address = document.querySelector('#address');
 
-pinMain.addEventListener('click', function () {
+// pinMain.addEventListener('click', function () {
+//  if (!activePage) {
+//    getEnabledElements(DISABLED_ELEMENTS);
+//    document.querySelector('.map').classList.remove('map--faded');
+//    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+//    activePage = true;
+//  }
+// });
+
+pinMainHandler.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
   if (!activePage) {
     getEnabledElements(DISABLED_ELEMENTS);
     document.querySelector('.map').classList.remove('map--faded');
     document.querySelector('.ad-form').classList.remove('ad-form--disabled');
     activePage = true;
   }
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+    pinMainHandler.style.top = (pinMainHandler.offsetTop - shift.y) + 'px';
+    pinMainHandler.style.left = (pinMainHandler.offsetLeft - shift.x) + 'px';
+
+    if ((pinMainHandler.offsetTop - shift.y) <= MIN_PIN_COORDS_X) {
+      pinMainHandler.style.top = MIN_PIN_COORDS_X;
+    } else if ((pinMainHandler.offsetTop - shift.y) >= MAX_PIN_COORDS_Y) {
+      pinMainHandler.style.top = MAX_PIN_COORDS_Y + 'px';
+    } else if ((pinMainHandler.offsetLeft - shift.x) <= (0 - MAIN_PIN_WIDTH / 2)) {
+      pinMainHandler.style.left = (0 - MAIN_PIN_WIDTH / 2) + 'px';
+    } else if ((pinMainHandler.offsetLeft - shift.x + MAIN_PIN_WIDTH / 2) >= MAX_PIN_COORDS_X) {
+      pinMainHandler.style.left = (MAX_PIN_COORDS_X - MAIN_PIN_WIDTH / 2) + 'px';
+    }
+
+    address.value = getMainAddressNew(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT, pinMainHandler, shift);
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
+
 
 selectTypeFlat.addEventListener('change', function () {
   var valueFlat = selectTypeFlat.options[selectTypeFlat.selectedIndex].value;
@@ -129,7 +189,7 @@ timeOut.addEventListener('change', function () {
 });
 
 
-document.querySelector('#address').value = getMainAddress(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
+address.value = getMainAddress(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
 
 getDisabledElements(DISABLED_ELEMENTS);
 getPins();
