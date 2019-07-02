@@ -5,7 +5,7 @@ var OFFER_QUANTITY = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var MAIN_PIN_HEIGHT = 87;
-var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_WIDTH = 64;
 var MIN_PIN_COORDS_Y = 130;
 var MAX_PIN_COORDS_Y = 630;
 var MIN_PIN_COORDS_X = 0;
@@ -100,7 +100,6 @@ function getMainAddressNew(width, height, pin, shift) {
 }
 
 
-// var pinMain = document.querySelector('.map__pin--main');
 var pinMainHandler = document.querySelector('.map__pin--main');
 var activePage = false;
 var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -110,15 +109,6 @@ var minPrice = document.querySelector('#price');
 var timeIn = document.querySelector('#timein');
 var timeOut = document.querySelector('#timeout');
 var address = document.querySelector('#address');
-
-// pinMain.addEventListener('click', function () {
-//  if (!activePage) {
-//    getEnabledElements(DISABLED_ELEMENTS);
-//    document.querySelector('.map').classList.remove('map--faded');
-//    document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-//    activePage = true;
-//  }
-// });
 
 pinMainHandler.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
@@ -145,18 +135,14 @@ pinMainHandler.addEventListener('mousedown', function (evt) {
       x: moveEvt.clientX,
       y: moveEvt.clientY
     };
-    pinMainHandler.style.top = (pinMainHandler.offsetTop - shift.y) + 'px';
+
     pinMainHandler.style.left = (pinMainHandler.offsetLeft - shift.x) + 'px';
 
-    if ((pinMainHandler.offsetTop - shift.y) <= MIN_PIN_COORDS_X) {
-      pinMainHandler.style.top = MIN_PIN_COORDS_X;
-    } else if ((pinMainHandler.offsetTop - shift.y) >= MAX_PIN_COORDS_Y) {
-      pinMainHandler.style.top = MAX_PIN_COORDS_Y + 'px';
-    } else if ((pinMainHandler.offsetLeft - shift.x) <= (0 - MAIN_PIN_WIDTH / 2)) {
-      pinMainHandler.style.left = (0 - MAIN_PIN_WIDTH / 2) + 'px';
-    } else if ((pinMainHandler.offsetLeft - shift.x + MAIN_PIN_WIDTH / 2) >= MAX_PIN_COORDS_X) {
-      pinMainHandler.style.left = (MAX_PIN_COORDS_X - MAIN_PIN_WIDTH / 2) + 'px';
-    }
+    var pinTopY = Math.max((MIN_PIN_COORDS_Y - MAIN_PIN_HEIGHT), Math.min((MAX_PIN_COORDS_Y - MAIN_PIN_HEIGHT), (pinMainHandler.offsetTop - shift.y)));
+    var pinTopX = Math.max((MIN_PIN_COORDS_X - MAIN_PIN_WIDTH / 2), Math.min((MAX_PIN_COORDS_X - MAIN_PIN_WIDTH / 2), (pinMainHandler.offsetLeft - shift.x)));
+
+    pinMainHandler.style.top = pinTopY + 'px';
+    pinMainHandler.style.left = pinTopX + 'px';
 
     address.value = getMainAddressNew(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT, pinMainHandler, shift);
   };
