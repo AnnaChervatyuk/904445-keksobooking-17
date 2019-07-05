@@ -17,6 +17,10 @@ var PRICES_FLATS = {
   'flat': 1000,
   'palace': 10000
 };
+var START_POINTS_MAIN_PIN = {
+  'left': 570,
+  'top': 375
+};
 
 
 function getRandomElement() {
@@ -40,8 +44,8 @@ function createOffers(offerQuantity) {
         'type': getRandomElement(TYPE_OFFER)
       },
       'location': {
-        'x': getRandomNumber(MIN_PIN_COORDS_X, MAX_PIN_COORDS_X - PIN_WIDTH / 2),
-        'y': getRandomNumber(MIN_PIN_COORDS_Y, MAX_PIN_COORDS_Y - PIN_HEIGHT)
+        'x': getRandomNumber(MIN_PIN_COORDS_X - PIN_WIDTH / 2, MAX_PIN_COORDS_X - PIN_WIDTH / 2),
+        'y': getRandomNumber(MIN_PIN_COORDS_Y - PIN_HEIGHT, MAX_PIN_COORDS_Y - PIN_HEIGHT)
       }
     });
   }
@@ -49,8 +53,14 @@ function createOffers(offerQuantity) {
 }
 
 function getMainAddress(width, height) {
-  var x = MAX_PIN_COORDS_X - width / 2;
-  var y = MAX_PIN_COORDS_Y - height;
+  var x = START_POINTS_MAIN_PIN.left + width / 2;
+  var y = START_POINTS_MAIN_PIN.top + height;
+  return (x + ', ' + y);
+}
+
+function getMainAddressNew(width, height, pin) {
+  var x = pin.offsetLeft + width / 2;
+  var y = pin.offsetTop + height;
   return (x + ', ' + y);
 }
 
@@ -93,13 +103,6 @@ function checkPrice() {
   minPrice.setCustomValidity('');
 }
 
-function getMainAddressNew(width, height, pin, shift) {
-  var x = (pin.offsetLeft - shift.x) + width / 2;
-  var y = (pin.offsetTop - shift.y) + height;
-  return (x + ', ' + y);
-}
-
-
 var pinMainHandler = document.querySelector('.map__pin--main');
 var activePage = false;
 var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -136,16 +139,15 @@ pinMainHandler.addEventListener('mousedown', function (evt) {
       y: moveEvt.clientY
     };
 
-    pinMainHandler.style.left = (pinMainHandler.offsetLeft - shift.x) + 'px';
-
     var pinTopY = Math.max((MIN_PIN_COORDS_Y - MAIN_PIN_HEIGHT), Math.min((MAX_PIN_COORDS_Y - MAIN_PIN_HEIGHT), (pinMainHandler.offsetTop - shift.y)));
     var pinTopX = Math.max((MIN_PIN_COORDS_X - MAIN_PIN_WIDTH / 2), Math.min((MAX_PIN_COORDS_X - MAIN_PIN_WIDTH / 2), (pinMainHandler.offsetLeft - shift.x)));
 
     pinMainHandler.style.top = pinTopY + 'px';
     pinMainHandler.style.left = pinTopX + 'px';
 
-    address.value = getMainAddressNew(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT, pinMainHandler, shift);
+    address.value = getMainAddressNew(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT, pinMainHandler);
   };
+
 
   var onMouseUp = function (upEvt) {
     upEvt.preventDefault();
