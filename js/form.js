@@ -32,7 +32,6 @@
     }
   }
 
-
   function getTimeElement(firstTimeElement, secondTimeElement) {
     secondTimeElement.value = firstTimeElement.options[firstTimeElement.selectedIndex].value;
   }

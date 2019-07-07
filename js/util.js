@@ -15,4 +15,5 @@
     'getRandomElement': getRandomElement,
     'getRandomNumber': getRandomNumber,
   };
+
 })();
