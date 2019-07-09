@@ -1,38 +1,13 @@
 'use strict';
 
 (function () {
-  var PIN_WIDTH = 50;
-  var PIN_HEIGHT = 70;
   var MAIN_PIN_HEIGHT = 87;
   var MAIN_PIN_WIDTH = 64;
   var MIN_PIN_COORDS_Y = 130;
   var MAX_PIN_COORDS_Y = 630;
   var MIN_PIN_COORDS_X = 0;
   var MAX_PIN_COORDS_X = document.querySelector('.map__pins').clientWidth;
-  var TYPE_OFFER = ['palace', 'flat', 'house', 'bungalo'];
-  var OFFER_QUANTITY = 8;
-  var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
-  var pinList = document.querySelector('.map__pins');
-
-  function createOffers(offerQuantity) {
-    var arrayOffers = [];
-    for (var i = 0; i < offerQuantity; i++) {
-      arrayOffers.push({
-        'author': {
-          'avatar': 'img/avatars/user0' + (i + 1) + '.png'
-        },
-        'offer': {
-          'type': window.util.getRandomElement(TYPE_OFFER)
-        },
-        'location': {
-          'x': window.util.getRandomNumber(MIN_PIN_COORDS_X - PIN_WIDTH / 2, MAX_PIN_COORDS_X - PIN_WIDTH / 2),
-          'y': window.util.getRandomNumber(MIN_PIN_COORDS_Y - PIN_HEIGHT, MAX_PIN_COORDS_Y - PIN_HEIGHT)
-        }
-      });
-    }
-    return arrayOffers;
-  }
-  var allOffers = createOffers(OFFER_QUANTITY);
+  var ESC_KEYCODE = 27;
 
   function createPinMock(pinInfo) {
     var pinMock = templatePin.cloneNode(true);
@@ -56,14 +31,57 @@
   }
 
   var pinMainHandler = document.querySelector('.map__pin--main');
+  var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
+  var pinList = document.querySelector('.map__pins');
+
 
   pinMainHandler.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
+
     if (!window.form.activePage) {
       getEnabledElements(window.form.DISABLED_ELEMENTS);
       document.querySelector('.map').classList.remove('map--faded');
       document.querySelector('.ad-form').classList.remove('ad-form--disabled');
       window.form.activePage = true;
+
+      var successHandler = function (allOffers) {
+        var fragment = document.createDocumentFragment();
+        for (var i = 0; i < allOffers.length; i++) {
+          fragment.appendChild(createPinMock(allOffers[i]));
+        }
+        pinList.appendChild(fragment);
+      };
+
+      var errorHandler = function () {
+        var errorPopup = document.querySelector('#error').content.querySelector('.error');
+        var refreshPage = function () {
+          window.location.reload();
+        };
+
+        var closeErrorPopup = function () {
+          errorPopup.remove();
+        };
+
+        var onPopupEscPress = function (evtKey) {
+          if (evtKey.keyCode === ESC_KEYCODE) {
+            closeErrorPopup();
+            refreshPage();
+          }
+        };
+
+        document.body.appendChild(errorPopup);
+
+        document.addEventListener('keydown', onPopupEscPress);
+
+        errorPopup.addEventListener('click', function () {
+          closeErrorPopup();
+          refreshPage();
+        });
+
+
+      };
+
+      window.load.load(successHandler, errorHandler);
     }
 
     var startCoords = {
@@ -101,16 +119,6 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
-
-  function getPins() {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < OFFER_QUANTITY; i++) {
-      fragment.appendChild(createPinMock(allOffers[i]));
-    }
-    pinList.appendChild(fragment);
-  }
-
-  getPins();
 
   window.pin = {
     'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
