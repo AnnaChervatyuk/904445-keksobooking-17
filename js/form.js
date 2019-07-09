@@ -12,19 +12,12 @@
     'left': 570,
     'top': 375
   };
-  var timeIn = document.querySelector('#timein');
-  var timeOut = document.querySelector('#timeout');
-  var address = document.querySelector('#address');
-  var selectTypeFlat = document.querySelector('#type');
-  var minPrice = document.querySelector('#price');
-  var activePage = false;
 
   function getMainAddress(width, height) {
     var x = START_POINTS_MAIN_PIN.left + width / 2;
     var y = START_POINTS_MAIN_PIN.top + height;
     return (x + ', ' + y);
   }
-
 
   function getDisabledElements(arr) {
     for (var i = 0; i < arr.length; i++) {
@@ -39,6 +32,13 @@
   function checkPrice() {
     minPrice.setCustomValidity('');
   }
+
+  var timeIn = document.querySelector('#timein');
+  var timeOut = document.querySelector('#timeout');
+  var address = document.querySelector('#address');
+  var selectTypeFlat = document.querySelector('#type');
+  var minPrice = document.querySelector('#price');
+  var activePage = false;
 
   selectTypeFlat.addEventListener('change', function () {
     var valueFlat = selectTypeFlat.options[selectTypeFlat.selectedIndex].value;
@@ -55,7 +55,6 @@
   timeOut.addEventListener('change', function () {
     getTimeElement(timeOut, timeIn);
   });
-
 
   address.value = getMainAddress(window.pin.MAIN_PIN_WIDTH, window.pin.MAIN_PIN_HEIGHT);
 
