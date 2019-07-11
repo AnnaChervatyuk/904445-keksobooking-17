@@ -33,7 +33,45 @@
   var pinMainHandler = document.querySelector('.map__pin--main');
   var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
   var pinList = document.querySelector('.map__pins');
+  var pinsArr = [];
 
+  var successHandler = function (allOffers) {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < allOffers.length; i++) {
+      fragment.appendChild(createPinMock(allOffers[i]));
+      pinsArr.push(allOffers[i]);
+    }
+    pinList.appendChild(fragment);
+    return pinsArr;
+  };
+
+  var errorHandler = function () {
+    var errorPopup = document.querySelector('#error').content.querySelector('.error');
+    var refreshPage = function () {
+      window.location.reload();
+    };
+
+    var closeErrorPopup = function () {
+      errorPopup.remove();
+    };
+
+    var onPopupEscPress = function (evtKey) {
+      if (evtKey.keyCode === ESC_KEYCODE) {
+        closeErrorPopup();
+        refreshPage();
+      }
+    };
+
+    document.body.appendChild(errorPopup);
+
+    document.addEventListener('keydown', onPopupEscPress);
+
+    errorPopup.addEventListener('click', function () {
+      closeErrorPopup();
+      refreshPage();
+    });
+
+  };
 
   pinMainHandler.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -43,43 +81,6 @@
       document.querySelector('.map').classList.remove('map--faded');
       document.querySelector('.ad-form').classList.remove('ad-form--disabled');
       window.form.activePage = true;
-
-      var successHandler = function (allOffers) {
-        var fragment = document.createDocumentFragment();
-        for (var i = 0; i < allOffers.length; i++) {
-          fragment.appendChild(createPinMock(allOffers[i]));
-        }
-        pinList.appendChild(fragment);
-      };
-
-      var errorHandler = function () {
-        var errorPopup = document.querySelector('#error').content.querySelector('.error');
-        var refreshPage = function () {
-          window.location.reload();
-        };
-
-        var closeErrorPopup = function () {
-          errorPopup.remove();
-        };
-
-        var onPopupEscPress = function (evtKey) {
-          if (evtKey.keyCode === ESC_KEYCODE) {
-            closeErrorPopup();
-            refreshPage();
-          }
-        };
-
-        document.body.appendChild(errorPopup);
-
-        document.addEventListener('keydown', onPopupEscPress);
-
-        errorPopup.addEventListener('click', function () {
-          closeErrorPopup();
-          refreshPage();
-        });
-
-
-      };
 
       window.load.load(successHandler, errorHandler);
     }
@@ -120,9 +121,19 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
+  var removePins = function () {
+    var renderedPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    renderedPins.forEach(function (value) {
+      value.remove();
+    });
+  };
+
   window.pin = {
     'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
-    'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT
+    'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT,
+    'pinsArr': pinsArr,
+    'successHandler': successHandler,
+    'removePins': removePins,
   };
 
 })();
