@@ -13,6 +13,35 @@
     'top': 375
   };
 
+  var CAPACITY_ON_ROOMS = {
+    1: [1],
+    2: [1, 2],
+    3: [1, 2, 3],
+    100: [0]
+  };
+
+  // текст ошибки при несоответсиви количества комнат и гостей
+  var getCapacityError = function (room, capacity) {
+    var result = '';
+    if (Number(room.value) < Number(capacity.value)) {
+      result = 'комнат меньше, чем гостей';
+    } else {
+      if (room.value === '100' || capacity.value === '0') {
+        result = '100 комнат предназначены не для гостей';
+      }
+    }
+    return result;
+  };
+
+  // Проверяка количества комнат и гостей
+  var checkRoomAndCapacity = function () {
+    if (CAPACITY_ON_ROOMS[roomNumber.value].indexOf(parseInt(сapacityNumber.value, 10)) === -1) {
+      roomNumber.setCustomValidity(getCapacityError(roomNumber, сapacityNumber));
+    } else {
+      roomNumber.setCustomValidity('');
+    }
+  };
+
   function getMainAddress(width, height) {
     var x = START_POINTS_MAIN_PIN.left + width / 2;
     var y = START_POINTS_MAIN_PIN.top + height;
@@ -39,6 +68,11 @@
   var selectTypeFlat = document.querySelector('#type');
   var minPrice = document.querySelector('#price');
   var activePage = false;
+  var сapacityNumber = document.querySelector('#capacity');
+  var roomNumber = document.querySelector('#room_number');
+  var submit = document.querySelector('.ad-form__submit');
+
+  submit.addEventListener('click', checkRoomAndCapacity);
 
   selectTypeFlat.addEventListener('change', function () {
     var valueFlat = selectTypeFlat.options[selectTypeFlat.selectedIndex].value;
