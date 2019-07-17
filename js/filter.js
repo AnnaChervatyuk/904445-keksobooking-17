@@ -9,7 +9,7 @@
   housingType.addEventListener('change', function () {
     currentHousingType = housingType.options[housingType.selectedIndex].value;
     filterOffers();
-    window.pin.successHandler(filteredOffers);
+    window.pin.renderPins(filteredOffers);
   });
 
 
@@ -24,6 +24,10 @@
 
     filteredOffers = filteredOffers.slice(0, MAX_PINS);
     return filteredOffers;
+  };
+
+  window.filter = {
+    'MAX_PINS': MAX_PINS
   };
 
 })();
