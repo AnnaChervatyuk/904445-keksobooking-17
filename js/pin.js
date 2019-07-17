@@ -9,6 +9,7 @@
   var MAX_PIN_COORDS_X = document.querySelector('.map__pins').clientWidth;
   var ESC_KEYCODE = 27;
 
+  //  создается пин объявления
   function createPinMock(pinInfo) {
     var pinMock = templatePin.cloneNode(true);
     pinMock.style.left = pinInfo.location.x + 'px';
@@ -18,12 +19,14 @@
     return pinMock;
   }
 
+  // рассчет адреса главного пина после движения
   function getMainAddressNew(width, height, pin) {
     var x = pin.offsetLeft + width / 2;
     var y = pin.offsetTop + height;
     return (x + ', ' + y);
   }
 
+  // разблокировка заблокированных полей при первом нажатии главного пина
   function getEnabledElements(arr) {
     for (var i = 0; i < arr.length; i++) {
       arr[i].disabled = false;
@@ -35,18 +38,33 @@
   var pinList = document.querySelector('.map__pins');
   var pinsArr = [];
 
-  var successHandler = function (allOffers) {
+  //  создание массива пинов
+  var renderPins = function (allOffers) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < allOffers.length; i++) {
       fragment.appendChild(createPinMock(allOffers[i]));
-      pinsArr.push(allOffers[i]);
+      var pinsElement = allOffers[i];
+      pinsArr.push(pinsElement);
     }
     pinList.appendChild(fragment);
+    var pinsButton = pinList.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var j = 0; j < pinsButton.length; j++) {
+      pinsButton[j].querySelector('img').addEventListener('click', window.card.changeCard(allOffers[j]));
+    }
     return pinsArr;
   };
 
+
+  var successHandler = function (allOffers) {
+    renderPins(allOffers);
+    //  renderPins(allOffers.slice(0, 5));  // НЕ РАБОТАЕТ
+  };
+
+
+  // перезагрузка при ошибки сервера
   var errorHandler = function () {
     var errorPopup = document.querySelector('#error').content.querySelector('.error');
+
     var refreshPage = function () {
       window.location.reload();
     };
@@ -58,21 +76,20 @@
     var onPopupEscPress = function (evtKey) {
       if (evtKey.keyCode === ESC_KEYCODE) {
         closeErrorPopup();
-        refreshPage();
+        refreshPage(); // не работает
       }
     };
 
     document.body.appendChild(errorPopup);
-
     document.addEventListener('keydown', onPopupEscPress);
 
     errorPopup.addEventListener('click', function () {
       closeErrorPopup();
       refreshPage();
     });
-
   };
 
+  // разблокировка страницы при первом передвижении пина
   pinMainHandler.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
@@ -81,7 +98,6 @@
       document.querySelector('.map').classList.remove('map--faded');
       document.querySelector('.ad-form').classList.remove('ad-form--disabled');
       window.form.activePage = true;
-
       window.load.load(successHandler, errorHandler);
     }
 
@@ -121,6 +137,7 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
+  // удаление пинов, кроме главного
   var removePins = function () {
     var renderedPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     renderedPins.forEach(function (value) {
@@ -128,12 +145,15 @@
     });
   };
 
+
   window.pin = {
     'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
     'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT,
     'pinsArr': pinsArr,
     'successHandler': successHandler,
+    'renderPins': renderPins,
     'removePins': removePins,
+    'ESC_KEYCODE': ESC_KEYCODE
   };
 
 })();
