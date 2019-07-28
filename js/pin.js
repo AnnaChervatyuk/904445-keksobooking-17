@@ -16,6 +16,13 @@
     pinMock.style.top = pinInfo.location.y + 'px';
     pinMock.querySelector('img').src = pinInfo.author.avatar;
     pinMock.querySelector('img').alt = pinInfo.offer.type;
+
+    pinMock.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      window.card.changeCard(pinInfo);
+      pinMock.classList.add('map__pin--active');
+    });
+
     return pinMock;
   }
 
@@ -47,18 +54,14 @@
       pinsArr.push(pinsElement);
     }
     pinList.appendChild(fragment);
-    var pinsButton = pinList.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var j = 0; j < pinsButton.length; j++) {
-      pinsButton[j].querySelector('img').addEventListener('click', window.card.changeCard(allOffers[j]));
-    }
     return pinsArr;
   };
 
 
-  var successHandler = function (allOffers) {
+  /*  var successHandler = function (allOffers) {
     renderPins(allOffers);
     //  renderPins(allOffers.slice(0, 5));  // НЕ РАБОТАЕТ
-  };
+  }; */
 
 
   // перезагрузка при ошибки сервера
@@ -75,8 +78,9 @@
 
     var onPopupEscPress = function (evtKey) {
       if (evtKey.keyCode === ESC_KEYCODE) {
+        evtKey.preventDefault();
         closeErrorPopup();
-        refreshPage(); // не работает
+        refreshPage();
       }
     };
 
@@ -98,7 +102,7 @@
       document.querySelector('.map').classList.remove('map--faded');
       document.querySelector('.ad-form').classList.remove('ad-form--disabled');
       window.form.activePage = true;
-      window.load.load(successHandler, errorHandler);
+      window.load.load(renderPins, errorHandler);
     }
 
     var startCoords = {
@@ -150,10 +154,10 @@
     'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
     'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT,
     'pinsArr': pinsArr,
-    'successHandler': successHandler,
+    // 'successHandler': successHandler,
     'renderPins': renderPins,
     'removePins': removePins,
-    'ESC_KEYCODE': ESC_KEYCODE
+    'ESC_KEYCODE': ESC_KEYCODE,
   };
 
 })();
