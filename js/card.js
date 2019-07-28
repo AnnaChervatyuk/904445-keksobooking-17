@@ -73,6 +73,7 @@
     var renderedCard = map.querySelector('.map__card');
     if (renderedCard) {
       map.removeChild(renderedCard);
+      map.querySelector('.map__pin--active').classList.remove('map__pin--active');
     }
   };
 
@@ -86,8 +87,9 @@
 
   // закртие карточки по нажатию на esc
   var closeCardPopupOnEsc = function (evt) {
-    if (evt.keyCode === window.pin.ESC_CODE) {
+    if (evt.keyCode === window.pin.ESC_KEYCODE) {
       deleteRenderedCard();
+
     }
   };
 
@@ -102,6 +104,7 @@
 
   window.card = {
     'renderCard': renderCard,
+    'deleteRenderedCard': deleteRenderedCard,
     'changeCard': changeCard
   };
 
