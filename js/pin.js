@@ -1,16 +1,13 @@
 'use strict';
 
 (function () {
-  var MAIN_PIN_HEIGHT = 87;
-  var MAIN_PIN_WIDTH = 64;
   var MIN_PIN_COORDS_Y = 130;
   var MAX_PIN_COORDS_Y = 630;
   var MIN_PIN_COORDS_X = 0;
   var MAX_PIN_COORDS_X = document.querySelector('.map__pins').clientWidth;
-  var ESC_KEYCODE = 27;
 
   //  создается пин объявления
-  function createPinMock(pinInfo) {
+  var createPinMock = function (pinInfo) {
     var pinMock = templatePin.cloneNode(true);
     pinMock.style.left = pinInfo.location.x + 'px';
     pinMock.style.top = pinInfo.location.y + 'px';
@@ -24,26 +21,21 @@
     });
 
     return pinMock;
-  }
+  };
 
   // рассчет адреса главного пина после движения
-  function getMainAddressNew(width, height, pin) {
+  var getMainAddressNew = function (width, height, pin) {
     var x = pin.offsetLeft + width / 2;
     var y = pin.offsetTop + height;
     return (x + ', ' + y);
-  }
+  };
 
   // разблокировка заблокированных полей при первом нажатии главного пина
-  function getEnabledElements(arr) {
+  var getEnabledElements = function (arr) {
     for (var i = 0; i < arr.length; i++) {
       arr[i].disabled = false;
     }
-  }
-
-  var pinMainHandler = document.querySelector('.map__pin--main');
-  var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
-  var pinList = document.querySelector('.map__pins');
-  var pinsArr = [];
+  };
 
   //  создание массива пинов
   var renderPins = function (allOffers) {
@@ -57,17 +49,14 @@
     return pinsArr;
   };
 
-
-  /*  var successHandler = function (allOffers) {
-    renderPins(allOffers);
-    //  renderPins(allOffers.slice(0, 5));  // НЕ РАБОТАЕТ
-  }; */
+  var getMinPins = function (allOffers) {
+    renderPins(allOffers.slice(0, window.util.MAX_PINS));
+  };
 
 
   // перезагрузка при ошибки сервера
   var errorHandler = function () {
     var errorPopup = document.querySelector('#error').content.querySelector('.error');
-
     var refreshPage = function () {
       window.location.reload();
     };
@@ -77,7 +66,7 @@
     };
 
     var onPopupEscPress = function (evtKey) {
-      if (evtKey.keyCode === ESC_KEYCODE) {
+      if (evtKey.keyCode === window.util.ESC_KEYCODE) {
         evtKey.preventDefault();
         closeErrorPopup();
         refreshPage();
@@ -93,17 +82,42 @@
     });
   };
 
-  // разблокировка страницы при первом передвижении пина
+  // удаление пинов, кроме главного
+  var removePins = function () {
+    var renderedPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    renderedPins.forEach(function (value) {
+      value.remove();
+    });
+  };
+
+  // перемещение главного пина в центр
+  var moveMainPinToCenter = function () {
+    pinMainHandler.style.top = mainPinStartCoords.y + 'px';
+    pinMainHandler.style.left = mainPinStartCoords.x + 'px';
+    window.util.address.value = getMainAddressNew(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMainHandler);
+  };
+
+  var pinMainHandler = document.querySelector('.map__pin--main');
+  var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
+  var pinList = document.querySelector('.map__pins');
+  var pinsArr = [];
+  var mainPinStartCoords = {
+    x: pinMainHandler.offsetLeft,
+    y: pinMainHandler.offsetTop
+  };
+
+
+  // вычисления координат после перемещения галвного пина + разблокировка страницы при первом передвижении пина мышью
   pinMainHandler.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
-
-    if (!window.form.activePage) {
-      getEnabledElements(window.form.DISABLED_ELEMENTS);
+    if (!window.util.activePage) {
+      getEnabledElements(window.util.DISABLED_ELEMENTS);
       document.querySelector('.map').classList.remove('map--faded');
       document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-      window.form.activePage = true;
-      window.load.load(renderPins, errorHandler);
+      window.load.load(getMinPins, errorHandler);
+      window.util.activePage = true;
     }
+
 
     var startCoords = {
       x: evt.clientX,
@@ -122,13 +136,13 @@
         y: moveEvt.clientY
       };
 
-      var pinTopY = Math.max((MIN_PIN_COORDS_Y - MAIN_PIN_HEIGHT), Math.min((MAX_PIN_COORDS_Y - MAIN_PIN_HEIGHT), (pinMainHandler.offsetTop - shift.y)));
-      var pinTopX = Math.max((MIN_PIN_COORDS_X - MAIN_PIN_WIDTH / 2), Math.min((MAX_PIN_COORDS_X - MAIN_PIN_WIDTH / 2), (pinMainHandler.offsetLeft - shift.x)));
+      var pinTopY = Math.max((MIN_PIN_COORDS_Y - window.util.MAIN_PIN_HEIGHT), Math.min((MAX_PIN_COORDS_Y - window.util.MAIN_PIN_HEIGHT), (pinMainHandler.offsetTop - shift.y)));
+      var pinTopX = Math.max((MIN_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), Math.min((MAX_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), (pinMainHandler.offsetLeft - shift.x)));
 
       pinMainHandler.style.top = pinTopY + 'px';
       pinMainHandler.style.left = pinTopX + 'px';
 
-      window.form.address.value = getMainAddressNew(MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT, pinMainHandler);
+      window.util.address.value = getMainAddressNew(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMainHandler);
     };
 
     var onMouseUp = function (upEvt) {
@@ -141,23 +155,25 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
-  // удаление пинов, кроме главного
-  var removePins = function () {
-    var renderedPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    renderedPins.forEach(function (value) {
-      value.remove();
-    });
-  };
-
+  // разблокировка страницы при первом клике на enter
+  pinMainHandler.addEventListener('keydown', function (evt) {
+    evt.preventDefault();
+    if (evt.keyCode === window.util.ENTER_KEYCODE) {
+      if (!window.util.activePage) {
+        getEnabledElements(window.util.DISABLED_ELEMENTS);
+        document.querySelector('.map').classList.remove('map--faded');
+        document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+        window.load.load(renderPins, errorHandler);
+        window.util.activePage = true;
+      }
+    }
+  });
 
   window.pin = {
-    'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
-    'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT,
     'pinsArr': pinsArr,
-    // 'successHandler': successHandler,
     'renderPins': renderPins,
     'removePins': removePins,
-    'ESC_KEYCODE': ESC_KEYCODE,
+    'moveMainPinToCenter': moveMainPinToCenter,
   };
 
 })();

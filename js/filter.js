@@ -2,7 +2,6 @@
 
 (function () {
 
-  var MAX_PINS = 5;
   var housingType = document.querySelector('#housing-type');
   var housingPrice = document.querySelector('#housing-price');
   var housingGuests = document.querySelector('#housing-guests');
@@ -34,7 +33,6 @@
       max: Infinity
     }
   };
-  var mapFilters = document.querySelector('.map__filters');
 
   var checkTotal = function (allOffers) {
     return checkType(allOffers) &&
@@ -48,15 +46,6 @@
               checkFeatures(conditioner, allOffers) &&
               checkFeatures(washer, allOffers);
   };
-
-
-  mapFilters.addEventListener('change', function () {
-    window.card.deleteRenderedCard();
-    window.pin.removePins();
-    var filteredOffers = window.pin.pinsArr.filter(checkTotal).slice(0, MAX_PINS);
-    window.pin.renderPins(filteredOffers);
-  });
-
 
   var checkType = function (allOffers) {
     currentHousingType = housingType.options[housingType.selectedIndex].value;
@@ -82,7 +71,6 @@
     return true;
   };
 
-
   var checkPrice = function (allOffers) {
     var currentHousingPrice = pricesType[housingPrice.value];
     return allOffers.offer.price >= currentHousingPrice.min && allOffers.offer.price <= currentHousingPrice.max;
@@ -93,8 +81,13 @@
   };
 
 
-  window.filter = {
-    'MAX_PINS': MAX_PINS
-  };
+  window.util.mapFilters.addEventListener('change', function () {
+    window.util.debounce(function () {
+      window.card.deleteRenderedCard();
+      window.pin.removePins();
+      var filteredOffers = window.pin.pinsArr.filter(checkTotal).slice(0, window.util.MAX_PINS);
+      window.pin.renderPins(filteredOffers);
+    });
+  });
 
 })();

@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var DISABLED_ELEMENTS = document.querySelectorAll('.ad-form fieldset, .map__filters select, .map__filters fieldset');
   var PRICES_FLATS = {
     'bungalo': 0,
     'house': 5000,
@@ -33,7 +32,7 @@
     return result;
   };
 
-  // Проверяка количества комнат и гостей
+  // Проверка количества комнат и гостей
   var checkRoomAndCapacity = function () {
     if (CAPACITY_ON_ROOMS[roomNumber.value].indexOf(parseInt(сapacityNumber.value, 10)) === -1) {
       roomNumber.setCustomValidity(getCapacityError(roomNumber, сapacityNumber));
@@ -42,37 +41,51 @@
     }
   };
 
-  function getMainAddress(width, height) {
+  var getMainAddress = function (width, height) {
     var x = START_POINTS_MAIN_PIN.left + width / 2;
     var y = START_POINTS_MAIN_PIN.top + height;
     return (x + ', ' + y);
-  }
+  };
 
-  function getDisabledElements(arr) {
+  var getDisabledElements = function (arr) {
     for (var i = 0; i < arr.length; i++) {
       arr[i].disabled = true;
     }
-  }
+  };
 
-  function getTimeElement(firstTimeElement, secondTimeElement) {
+  var getTimeElement = function (firstTimeElement, secondTimeElement) {
     secondTimeElement.value = firstTimeElement.options[firstTimeElement.selectedIndex].value;
-  }
+  };
 
-  function checkPrice() {
+  var checkPrice = function () {
     minPrice.setCustomValidity('');
-  }
+  };
+
+  // дезакцивация страницы
+  var desactivatePage = function () {
+    if (!document.querySelector('.map').classList.contains('map--faded')) {
+      document.querySelector('.map').classList.add('map--faded');
+    }
+
+    if (!window.util.adForm.classList.contains('ad-form--disabled')) {
+      window.util.adForm.classList.add('ad-form--disabled');
+    }
+    getDisabledElements(window.util.DISABLED_ELEMENTS);
+  };
 
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
-  var address = document.querySelector('#address');
   var selectTypeFlat = document.querySelector('#type');
   var minPrice = document.querySelector('#price');
-  var activePage = false;
   var сapacityNumber = document.querySelector('#capacity');
   var roomNumber = document.querySelector('#room_number');
-  var submit = document.querySelector('.ad-form__submit');
+  var resetButton = document.querySelector('.ad-form__reset');
+  var submitButton = document.querySelector('.ad-form__submit');
 
-  submit.addEventListener('click', checkRoomAndCapacity);
+  window.util.adForm.addEventListener('change', function () {
+    checkPrice();
+    checkRoomAndCapacity();
+  });
 
   selectTypeFlat.addEventListener('change', function () {
     var valueFlat = selectTypeFlat.options[selectTypeFlat.selectedIndex].value;
@@ -90,13 +103,27 @@
     getTimeElement(timeOut, timeIn);
   });
 
-  address.value = getMainAddress(window.pin.MAIN_PIN_WIDTH, window.pin.MAIN_PIN_HEIGHT);
+  // кнопка сброса формы
+  resetButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    window.util.adForm.reset();
+    window.card.deleteRenderedCard();
+    window.pin.removePins();
+    window.util.mapFilters.reset();
+    window.pin.moveMainPinToCenter();
+    desactivatePage();
+    window.util.activePage = false;
+  });
 
-  getDisabledElements(DISABLED_ELEMENTS);
+  submitButton.addEventListener('click', function () {
+    var formData = new FormData(window.util.adForm);
+    window.load.save(formData, window.message.onSuccess, window.message.onError);
+  });
+
+  window.util.address.value = getMainAddress(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT);
+  getDisabledElements(window.util.DISABLED_ELEMENTS);
 
   window.form = {
-    'activePage': activePage,
-    'DISABLED_ELEMENTS': DISABLED_ELEMENTS,
-    'address': address,
+    'desactivatePage': desactivatePage
   };
 })();

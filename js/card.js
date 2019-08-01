@@ -66,6 +66,8 @@
     var fragment = document.createDocumentFragment();
     fragment.appendChild(createCard(cardInfo));
     map.appendChild(fragment);
+    document.addEventListener('keydown', closeCardPopupOnEsc);
+    document.addEventListener('click', closeCardPopupOnButton);
   };
 
   // удаление карточки
@@ -75,6 +77,8 @@
       map.removeChild(renderedCard);
       map.querySelector('.map__pin--active').classList.remove('map__pin--active');
     }
+    document.removeEventListener('click', closeCardPopupOnButton);
+    document.removeEventListener('keydown', closeCardPopupOnEsc);
   };
 
   // закртие карточки по нажатию на крестик
@@ -87,7 +91,7 @@
 
   // закртие карточки по нажатию на esc
   var closeCardPopupOnEsc = function (evt) {
-    if (evt.keyCode === window.pin.ESC_KEYCODE) {
+    if (evt.keyCode === window.util.ESC_KEYCODE) {
       deleteRenderedCard();
 
     }
@@ -98,9 +102,6 @@
     deleteRenderedCard();
     renderCard(evt);
   };
-
-  document.addEventListener('keydown', closeCardPopupOnEsc);
-  document.addEventListener('click', closeCardPopupOnButton);
 
   window.card = {
     'renderCard': renderCard,
