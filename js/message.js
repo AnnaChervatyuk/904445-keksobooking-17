@@ -74,7 +74,7 @@
 
 
   window.message = {
-    'onSuccess': onSuccess,
-    'onError': onError
+    onSuccess: onSuccess,
+    onError: onError
   };
 })();

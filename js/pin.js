@@ -5,6 +5,14 @@
   var MAX_PIN_COORDS_Y = 630;
   var MIN_PIN_COORDS_X = 0;
   var MAX_PIN_COORDS_X = document.querySelector('.map__pins').clientWidth;
+  var pinMainHandler = document.querySelector('.map__pin--main');
+  var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
+  var pinList = document.querySelector('.map__pins');
+  var fillArr = [];
+  var mainPinStartCoords = {
+    x: pinMainHandler.offsetLeft,
+    y: pinMainHandler.offsetTop
+  };
 
   //  создается пин объявления
   var createPinMock = function (pinInfo) {
@@ -42,15 +50,8 @@
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < allOffers.length; i++) {
       fragment.appendChild(createPinMock(allOffers[i]));
-      var pinsElement = allOffers[i];
-      pinsArr.push(pinsElement);
     }
     pinList.appendChild(fragment);
-    return pinsArr;
-  };
-
-  var getMinPins = function (allOffers) {
-    renderPins(allOffers.slice(0, window.util.MAX_PINS));
   };
 
 
@@ -97,15 +98,15 @@
     window.util.address.value = getMainAddressNew(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMainHandler);
   };
 
-  var pinMainHandler = document.querySelector('.map__pin--main');
-  var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
-  var pinList = document.querySelector('.map__pins');
-  var pinsArr = [];
-  var mainPinStartCoords = {
-    x: pinMainHandler.offsetLeft,
-    y: pinMainHandler.offsetTop
-  };
 
+  var loadAndRender = function (allOffers) {
+    for (var i = 0; i < allOffers.length; i++) {
+      var pinsElement = allOffers[i];
+      fillArr.push(pinsElement);
+    }
+    renderPins(allOffers.slice(0, window.util.MAX_PINS));
+    return fillArr;
+  };
 
   // вычисления координат после перемещения галвного пина + разблокировка страницы при первом передвижении пина мышью
   pinMainHandler.addEventListener('mousedown', function (evt) {
@@ -114,10 +115,9 @@
       getEnabledElements(window.util.DISABLED_ELEMENTS);
       document.querySelector('.map').classList.remove('map--faded');
       document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-      window.load.load(getMinPins, errorHandler);
+      window.load.load(loadAndRender, errorHandler);
       window.util.activePage = true;
     }
-
 
     var startCoords = {
       x: evt.clientX,
@@ -136,7 +136,7 @@
         y: moveEvt.clientY
       };
 
-      var pinTopY = Math.max((MIN_PIN_COORDS_Y - window.util.MAIN_PIN_HEIGHT), Math.min((MAX_PIN_COORDS_Y - window.util.MAIN_PIN_HEIGHT), (pinMainHandler.offsetTop - shift.y)));
+      var pinTopY = Math.max((MIN_PIN_COORDS_Y), Math.min((MAX_PIN_COORDS_Y), (pinMainHandler.offsetTop - shift.y)));
       var pinTopX = Math.max((MIN_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), Math.min((MAX_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), (pinMainHandler.offsetLeft - shift.x)));
 
       pinMainHandler.style.top = pinTopY + 'px';
@@ -163,17 +163,17 @@
         getEnabledElements(window.util.DISABLED_ELEMENTS);
         document.querySelector('.map').classList.remove('map--faded');
         document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-        window.load.load(renderPins, errorHandler);
+        window.load.load(loadAndRender, errorHandler);
         window.util.activePage = true;
       }
     }
   });
 
   window.pin = {
-    'pinsArr': pinsArr,
-    'renderPins': renderPins,
-    'removePins': removePins,
-    'moveMainPinToCenter': moveMainPinToCenter,
+    renderPins: renderPins,
+    removePins: removePins,
+    moveMainPinToCenter: moveMainPinToCenter,
+    fillArr: fillArr
   };
 
 })();

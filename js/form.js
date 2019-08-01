@@ -11,13 +11,20 @@
     'left': 570,
     'top': 375
   };
-
   var CAPACITY_ON_ROOMS = {
     1: [1],
     2: [1, 2],
     3: [1, 2, 3],
     100: [0]
   };
+  var timeIn = document.querySelector('#timein');
+  var timeOut = document.querySelector('#timeout');
+  var selectTypeFlat = document.querySelector('#type');
+  var minPrice = document.querySelector('#price');
+  var сapacityNumber = document.querySelector('#capacity');
+  var roomNumber = document.querySelector('#room_number');
+  var resetButton = document.querySelector('.ad-form__reset');
+  var submitButton = document.querySelector('.ad-form__submit');
 
   // текст ошибки при несоответсиви количества комнат и гостей
   var getCapacityError = function (room, capacity) {
@@ -62,7 +69,7 @@
   };
 
   // дезакцивация страницы
-  var desactivatePage = function () {
+  var deactivated = function () {
     if (!document.querySelector('.map').classList.contains('map--faded')) {
       document.querySelector('.map').classList.add('map--faded');
     }
@@ -72,15 +79,6 @@
     }
     getDisabledElements(window.util.DISABLED_ELEMENTS);
   };
-
-  var timeIn = document.querySelector('#timein');
-  var timeOut = document.querySelector('#timeout');
-  var selectTypeFlat = document.querySelector('#type');
-  var minPrice = document.querySelector('#price');
-  var сapacityNumber = document.querySelector('#capacity');
-  var roomNumber = document.querySelector('#room_number');
-  var resetButton = document.querySelector('.ad-form__reset');
-  var submitButton = document.querySelector('.ad-form__submit');
 
   window.util.adForm.addEventListener('change', function () {
     checkPrice();
@@ -111,7 +109,7 @@
     window.pin.removePins();
     window.util.mapFilters.reset();
     window.pin.moveMainPinToCenter();
-    desactivatePage();
+    deactivated();
     window.util.activePage = false;
   });
 
@@ -124,6 +122,6 @@
   getDisabledElements(window.util.DISABLED_ELEMENTS);
 
   window.form = {
-    'desactivatePage': desactivatePage
+    deactivated: deactivated
   };
 })();

@@ -22,8 +22,8 @@
     lastTimeout = setTimeout(cb, DEBOUNCE);
   };
 
-  var getRandomElement = function (lenght) {
-    var randomElement = Math.floor(Math.random() * lenght);
+  var getRandomElement = function (length) {
+    var randomElement = Math.floor(Math.random() * length);
     return randomElement;
   };
 
@@ -33,19 +33,19 @@
   };
 
   window.util = {
-    'getRandomElement': getRandomElement,
-    'getRandomNumber': getRandomNumber,
-    'ESC_KEYCODE': ESC_KEYCODE,
-    'ENTER_KEYCODE': ENTER_KEYCODE,
-    'MAX_PINS': MAX_PINS,
-    'MAIN_PIN_WIDTH': MAIN_PIN_WIDTH,
-    'MAIN_PIN_HEIGHT': MAIN_PIN_HEIGHT,
-    'DISABLED_ELEMENTS': DISABLED_ELEMENTS,
-    'debounce': debounce,
-    'adForm': adForm,
-    'activePage': activePage,
-    'address': address,
-    'mapFilters': mapFilters
+    getRandomElement: getRandomElement,
+    getRandomNumber: getRandomNumber,
+    ESC_KEYCODE: ESC_KEYCODE,
+    ENTER_KEYCODE: ENTER_KEYCODE,
+    MAX_PINS: MAX_PINS,
+    MAIN_PIN_WIDTH: MAIN_PIN_WIDTH,
+    MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
+    DISABLED_ELEMENTS: DISABLED_ELEMENTS,
+    debounce: debounce,
+    adForm: adForm,
+    activePage: activePage,
+    address: address,
+    mapFilters: mapFilters
   };
 
 })();

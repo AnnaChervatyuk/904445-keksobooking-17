@@ -2,15 +2,15 @@
 
 (function () {
 
-  var TYPES_OF_HOUSING = {
+  var WIDTH_PHOTOS = 45;
+  var HEIGHT_PHOTOS = 40;
+  var map = document.querySelector('.map');
+  var TypesOfHousing = {
     flat: 'Квартира',
     bungalo: 'Бунгало',
     house: 'Дом',
     palace: 'Дворец'
   };
-  var WIDTH_PHOTOS = 45;
-  var HEIGHT_PHOTOS = 40;
-  var map = document.querySelector('.map');
 
   // получение и удаление данных о одступных удобствах
   var getCardFeatures = function (cardArray) {
@@ -51,7 +51,7 @@
     card.querySelector('.popup__title').textContent = cardInfo.offer.title;
     card.querySelector('.popup__text--address').textContent = cardInfo.offer.address;
     card.querySelector('.popup__text--price').textContent = cardInfo.offer.price + ' ₽/ночь';
-    card.querySelector('.popup__type').textContent = TYPES_OF_HOUSING[cardInfo.offer.type];
+    card.querySelector('.popup__type').textContent = TypesOfHousing[cardInfo.offer.type];
     card.querySelector('.popup__text--capacity').textContent = cardInfo.offer.rooms + ' комнаты для ' + cardInfo.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + cardInfo.offer.checkin + ', выезд до ' + cardInfo.offer.checkout;
     card.querySelector('.popup__description').textContent = cardInfo.offer.description;
@@ -104,9 +104,9 @@
   };
 
   window.card = {
-    'renderCard': renderCard,
-    'deleteRenderedCard': deleteRenderedCard,
-    'changeCard': changeCard
+    renderCard: renderCard,
+    deleteRenderedCard: deleteRenderedCard,
+    changeCard: changeCard
   };
 
 })();

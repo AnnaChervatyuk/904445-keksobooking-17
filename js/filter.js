@@ -13,9 +13,9 @@
   var elevator = document.querySelector('#filter-elevator');
   var conditioner = document.querySelector('#filter-conditioner');
   var currentHousingType = housingType.value;
-  var currenthousingGuests = housingGuests.value;
-  var currenthousingRooms = housingRooms.value;
-  var pricesType = {
+  var currentHousingGuests = housingGuests.value;
+  var currentHousingRooms = housingRooms.value;
+  var PricesType = {
     'low': {
       min: 0,
       max: 10000
@@ -56,23 +56,23 @@
   };
 
   var checkGuests = function (allOffers) {
-    currenthousingGuests = housingGuests.options[housingGuests.selectedIndex].value;
-    if (currenthousingGuests !== 'any') {
-      return allOffers.offer.guests.toString() === currenthousingGuests;
+    currentHousingGuests = housingGuests.options[housingGuests.selectedIndex].value;
+    if (currentHousingGuests !== 'any') {
+      return allOffers.offer.guests.toString() === currentHousingGuests;
     }
     return true;
   };
 
   var checkRooms = function (allOffers) {
-    currenthousingRooms = housingRooms.options[housingRooms.selectedIndex].value;
-    if (currenthousingRooms !== 'any') {
-      return allOffers.offer.rooms.toString() === currenthousingRooms;
+    currentHousingRooms = housingRooms.options[housingRooms.selectedIndex].value;
+    if (currentHousingRooms !== 'any') {
+      return allOffers.offer.rooms.toString() === currentHousingRooms;
     }
     return true;
   };
 
   var checkPrice = function (allOffers) {
-    var currentHousingPrice = pricesType[housingPrice.value];
+    var currentHousingPrice = PricesType[housingPrice.value];
     return allOffers.offer.price >= currentHousingPrice.min && allOffers.offer.price <= currentHousingPrice.max;
   };
 
@@ -85,7 +85,7 @@
     window.util.debounce(function () {
       window.card.deleteRenderedCard();
       window.pin.removePins();
-      var filteredOffers = window.pin.pinsArr.filter(checkTotal).slice(0, window.util.MAX_PINS);
+      var filteredOffers = window.pin.fillArr.filter(checkTotal).slice(0, window.util.MAX_PINS);
       window.pin.renderPins(filteredOffers);
     });
   });

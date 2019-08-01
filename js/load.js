@@ -60,8 +60,8 @@
   }
 
   window.load = {
-    'load': load,
-    'save': save
+    load: load,
+    save: save
   };
 
 })();
