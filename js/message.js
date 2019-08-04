@@ -3,6 +3,7 @@
 (function () {
   var templateMessage = document.querySelector('#success').content.querySelector('.success');
   var templateErrorMessage = document.querySelector('#error').content.querySelector('.error');
+  var main = document.querySelector('main');
   var successMessage;
   var errorMessage;
   var success = false;
@@ -11,8 +12,8 @@
   // сообщение об успешной отправке
   var showMessage = function () {
     successMessage = templateMessage.cloneNode(true);
-    document.querySelector('main').insertAdjacentElement('afterbegin', successMessage);
-    document.querySelector('.success').addEventListener('click', onMessageClick);
+    main.insertAdjacentElement('afterbegin', successMessage);
+    successMessage.addEventListener('click', onMessageClick);
     document.addEventListener('keydown', onMessageEscPress);
     success = true;
   };
@@ -20,8 +21,8 @@
   // сообщение об неуспешной отправке
   var showMessageError = function () {
     errorMessage = templateErrorMessage.cloneNode(true);
-    document.querySelector('main').insertAdjacentElement('afterbegin', errorMessage);
-    document.querySelector('.error').addEventListener('click', onMessageClick);
+    main.insertAdjacentElement('afterbegin', errorMessage);
+    errorMessage.addEventListener('click', onMessageClick);
     document.addEventListener('keydown', onMessageEscPress);
     error = true;
   };
@@ -34,7 +35,8 @@
     window.pin.removePins();
     window.util.mapFilters.reset();
     window.pin.moveMainPinToCenter();
-    window.form.desactivatePage();
+    window.form.getDeactivatedPage();
+    window.form.getсapacityNumber();
     window.util.activePage = false;
   };
 
@@ -46,12 +48,12 @@
   // удаление сообщения
   var deleteMessage = function () {
     if (success) {
-      document.querySelector('.success').removeEventListener('click', onMessageClick);
+      successMessage.removeEventListener('click', onMessageClick);
       successMessage.remove();
       success = false;
     }
     if (error) {
-      document.querySelector('.error').removeEventListener('click', onMessageClick);
+      errorMessage.removeEventListener('click', onMessageClick);
       errorMessage.remove();
       error = false;
     }

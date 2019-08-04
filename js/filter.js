@@ -2,16 +2,16 @@
 
 (function () {
 
-  var housingType = document.querySelector('#housing-type');
-  var housingPrice = document.querySelector('#housing-price');
-  var housingGuests = document.querySelector('#housing-guests');
-  var housingRooms = document.querySelector('#housing-rooms');
-  var wifi = document.querySelector('#filter-wifi');
-  var dishwasher = document.querySelector('#filter-dishwasher');
-  var parking = document.querySelector('#filter-parking');
-  var washer = document.querySelector('#filter-washer');
-  var elevator = document.querySelector('#filter-elevator');
-  var conditioner = document.querySelector('#filter-conditioner');
+  var housingType = window.util.mapFilters.querySelector('#housing-type');
+  var housingPrice = window.util.mapFilters.querySelector('#housing-price');
+  var housingGuests = window.util.mapFilters.querySelector('#housing-guests');
+  var housingRooms = window.util.mapFilters.querySelector('#housing-rooms');
+  var wifi = window.util.mapFilters.querySelector('#filter-wifi');
+  var dishwasher = window.util.mapFilters.querySelector('#filter-dishwasher');
+  var parking = window.util.mapFilters.querySelector('#filter-parking');
+  var washer = window.util.mapFilters.querySelector('#filter-washer');
+  var elevator = window.util.mapFilters.querySelector('#filter-elevator');
+  var conditioner = window.util.mapFilters.querySelector('#filter-conditioner');
   var currentHousingType = housingType.value;
   var currentHousingGuests = housingGuests.value;
   var currentHousingRooms = housingRooms.value;

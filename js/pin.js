@@ -5,30 +5,31 @@
   var MAX_PIN_COORDS_Y = 630;
   var MIN_PIN_COORDS_X = 0;
   var MAX_PIN_COORDS_X = document.querySelector('.map__pins').clientWidth;
-  var pinMainHandler = document.querySelector('.map__pin--main');
   var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
-  var pinList = document.querySelector('.map__pins');
+  var pinContainer = window.util.map.querySelector('.map__pins');
+  var pinMain = pinContainer.querySelector('.map__pin--main');
   var fillArr = [];
   var mainPinStartCoords = {
-    x: pinMainHandler.offsetLeft,
-    y: pinMainHandler.offsetTop
+    x: pinMain.offsetLeft,
+    y: pinMain.offsetTop
   };
 
   //  создается пин объявления
-  var createPinMock = function (pinInfo) {
-    var pinMock = templatePin.cloneNode(true);
-    pinMock.style.left = pinInfo.location.x + 'px';
-    pinMock.style.top = pinInfo.location.y + 'px';
-    pinMock.querySelector('img').src = pinInfo.author.avatar;
-    pinMock.querySelector('img').alt = pinInfo.offer.type;
+  var createPin = function (pinInfo) {
+    var pin = templatePin.cloneNode(true);
+    var pinImg = pin.querySelector('img');
+    pin.style.left = pinInfo.location.x + 'px';
+    pin.style.top = pinInfo.location.y + 'px';
+    pinImg.src = pinInfo.author.avatar;
+    pinImg.alt = pinInfo.offer.type;
 
-    pinMock.addEventListener('click', function (evt) {
+    pin.addEventListener('click', function (evt) {
       evt.preventDefault();
       window.card.changeCard(pinInfo);
-      pinMock.classList.add('map__pin--active');
+      pin.classList.add('map__pin--active');
     });
 
-    return pinMock;
+    return pin;
   };
 
   // рассчет адреса главного пина после движения
@@ -49,14 +50,14 @@
   var renderPins = function (allOffers) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < allOffers.length; i++) {
-      fragment.appendChild(createPinMock(allOffers[i]));
+      fragment.appendChild(createPin(allOffers[i]));
     }
-    pinList.appendChild(fragment);
+    pinContainer.appendChild(fragment);
   };
 
 
   // перезагрузка при ошибки сервера
-  var errorHandler = function () {
+  var errorLoading = function () {
     var errorPopup = document.querySelector('#error').content.querySelector('.error');
     var refreshPage = function () {
       window.location.reload();
@@ -93,30 +94,36 @@
 
   // перемещение главного пина в центр
   var moveMainPinToCenter = function () {
-    pinMainHandler.style.top = mainPinStartCoords.y + 'px';
-    pinMainHandler.style.left = mainPinStartCoords.x + 'px';
-    window.util.address.value = getMainAddressNew(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMainHandler);
+    pinMain.style.top = mainPinStartCoords.y + 'px';
+    pinMain.style.left = mainPinStartCoords.x + 'px';
+    window.util.address.value = getMainAddressNew(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMain);
   };
 
-
-  var loadAndRender = function (allOffers) {
+  // загрузка и первичная отрисовка пинов
+  var loadAndRenderPins = function (allOffers) {
     for (var i = 0; i < allOffers.length; i++) {
       var pinsElement = allOffers[i];
       fillArr.push(pinsElement);
     }
     renderPins(allOffers.slice(0, window.util.MAX_PINS));
+    getActivePage();
     return fillArr;
   };
 
+  // разблокировка страницы
+  var getActivePage = function () {
+    getEnabledElements(window.util.disabledElements);
+    window.util.map.classList.remove('map--faded');
+    window.util.adForm.classList.remove('ad-form--disabled');
+  };
+
   // вычисления координат после перемещения галвного пина + разблокировка страницы при первом передвижении пина мышью
-  pinMainHandler.addEventListener('mousedown', function (evt) {
+  pinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     if (!window.util.activePage) {
-      getEnabledElements(window.util.DISABLED_ELEMENTS);
-      document.querySelector('.map').classList.remove('map--faded');
-      document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-      window.load.load(loadAndRender, errorHandler);
+      window.load.load(loadAndRenderPins, errorLoading);
       window.util.activePage = true;
+      window.util.address.value = window.form.getMainAddress(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMain);
     }
 
     var startCoords = {
@@ -136,13 +143,13 @@
         y: moveEvt.clientY
       };
 
-      var pinTopY = Math.max((MIN_PIN_COORDS_Y), Math.min((MAX_PIN_COORDS_Y), (pinMainHandler.offsetTop - shift.y)));
-      var pinTopX = Math.max((MIN_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), Math.min((MAX_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), (pinMainHandler.offsetLeft - shift.x)));
+      var pinTopY = Math.max((MIN_PIN_COORDS_Y), Math.min((MAX_PIN_COORDS_Y), (pinMain.offsetTop - shift.y)));
+      var pinTopX = Math.max((MIN_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), Math.min((MAX_PIN_COORDS_X - window.util.MAIN_PIN_WIDTH / 2), (pinMain.offsetLeft - shift.x)));
 
-      pinMainHandler.style.top = pinTopY + 'px';
-      pinMainHandler.style.left = pinTopX + 'px';
+      pinMain.style.top = pinTopY + 'px';
+      pinMain.style.left = pinTopX + 'px';
 
-      window.util.address.value = getMainAddressNew(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMainHandler);
+      window.util.address.value = getMainAddressNew(window.util.MAIN_PIN_WIDTH, window.util.MAIN_PIN_HEIGHT, pinMain);
     };
 
     var onMouseUp = function (upEvt) {
@@ -156,14 +163,14 @@
   });
 
   // разблокировка страницы при первом клике на enter
-  pinMainHandler.addEventListener('keydown', function (evt) {
+  pinMain.addEventListener('keydown', function (evt) {
     evt.preventDefault();
     if (evt.keyCode === window.util.ENTER_KEYCODE) {
       if (!window.util.activePage) {
-        getEnabledElements(window.util.DISABLED_ELEMENTS);
-        document.querySelector('.map').classList.remove('map--faded');
-        document.querySelector('.ad-form').classList.remove('ad-form--disabled');
-        window.load.load(loadAndRender, errorHandler);
+        getEnabledElements(window.util.disabledElements);
+        window.util.map.classList.remove('map--faded');
+        window.util.adForm.classList.remove('ad-form--disabled');
+        window.load.load(loadAndRenderPins, errorLoading);
         window.util.activePage = true;
       }
     }
