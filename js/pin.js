@@ -40,7 +40,7 @@
   };
 
   // разблокировка заблокированных полей при первом нажатии главного пина
-  var getEnabledElements = function (arr) {
+  var enableElements = function (arr) {
     for (var i = 0; i < arr.length; i++) {
       arr[i].disabled = false;
     }
@@ -67,7 +67,7 @@
       errorPopup.remove();
     };
 
-    var onPopupEscPress = function (evtKey) {
+    var closeErrorPopupOnEsc = function (evtKey) {
       if (evtKey.keyCode === window.util.ESC_KEYCODE) {
         evtKey.preventDefault();
         closeErrorPopup();
@@ -76,7 +76,7 @@
     };
 
     document.body.appendChild(errorPopup);
-    document.addEventListener('keydown', onPopupEscPress);
+    document.addEventListener('keydown', closeErrorPopupOnEsc);
 
     errorPopup.addEventListener('click', function () {
       closeErrorPopup();
@@ -106,13 +106,13 @@
       fillArr.push(pinsElement);
     }
     renderPins(allOffers.slice(0, window.util.MAX_PINS));
-    getActivePage();
+    activatePage();
     return fillArr;
   };
 
   // разблокировка страницы
-  var getActivePage = function () {
-    getEnabledElements(window.util.disabledElements);
+  var activatePage = function () {
+    enableElements(window.util.disabledElements);
     window.util.map.classList.remove('map--faded');
     window.util.adForm.classList.remove('ad-form--disabled');
   };
@@ -167,7 +167,7 @@
     evt.preventDefault();
     if (evt.keyCode === window.util.ENTER_KEYCODE) {
       if (!window.util.activePage) {
-        getEnabledElements(window.util.disabledElements);
+        enableElements(window.util.disabledElements);
         window.util.map.classList.remove('map--faded');
         window.util.adForm.classList.remove('ad-form--disabled');
         window.load.load(loadAndRenderPins, errorLoading);

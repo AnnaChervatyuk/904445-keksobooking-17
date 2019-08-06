@@ -49,26 +49,17 @@
 
   var checkType = function (allOffers) {
     currentHousingType = housingType.options[housingType.selectedIndex].value;
-    if (currentHousingType !== 'any') {
-      return allOffers.offer.type === currentHousingType;
-    }
-    return true;
+    return (currentHousingType === 'any') || allOffers.offer.type === currentHousingType;
   };
 
   var checkGuests = function (allOffers) {
     currentHousingGuests = housingGuests.options[housingGuests.selectedIndex].value;
-    if (currentHousingGuests !== 'any') {
-      return allOffers.offer.guests.toString() === currentHousingGuests;
-    }
-    return true;
+    return (currentHousingGuests === 'any') || allOffers.offer.guests.toString() === currentHousingGuests;
   };
 
   var checkRooms = function (allOffers) {
     currentHousingRooms = housingRooms.options[housingRooms.selectedIndex].value;
-    if (currentHousingRooms !== 'any') {
-      return allOffers.offer.rooms.toString() === currentHousingRooms;
-    }
-    return true;
+    return (currentHousingRooms === 'any') || allOffers.offer.rooms.toString() === currentHousingRooms;
   };
 
   var checkPrice = function (allOffers) {

@@ -13,8 +13,8 @@
   var showMessage = function () {
     successMessage = templateMessage.cloneNode(true);
     main.insertAdjacentElement('afterbegin', successMessage);
-    successMessage.addEventListener('click', onMessageClick);
-    document.addEventListener('keydown', onMessageEscPress);
+    successMessage.addEventListener('click', closeMessageOnClick);
+    document.addEventListener('keydown', closeMessageOnEsc);
     success = true;
   };
 
@@ -22,8 +22,8 @@
   var showMessageError = function () {
     errorMessage = templateErrorMessage.cloneNode(true);
     main.insertAdjacentElement('afterbegin', errorMessage);
-    errorMessage.addEventListener('click', onMessageClick);
-    document.addEventListener('keydown', onMessageEscPress);
+    errorMessage.addEventListener('click', closeMessageOnClick);
+    document.addEventListener('keydown', closeMessageOnEsc);
     error = true;
   };
 
@@ -35,7 +35,7 @@
     window.pin.removePins();
     window.util.mapFilters.reset();
     window.pin.moveMainPinToCenter();
-    window.form.getDeactivatedPage();
+    window.form.deactivatePage();
     window.form.getсapacityNumber();
     window.util.activePage = false;
   };
@@ -48,26 +48,26 @@
   // удаление сообщения
   var deleteMessage = function () {
     if (success) {
-      successMessage.removeEventListener('click', onMessageClick);
+      successMessage.removeEventListener('click', closeMessageOnClick);
       successMessage.remove();
       success = false;
     }
     if (error) {
-      errorMessage.removeEventListener('click', onMessageClick);
+      errorMessage.removeEventListener('click', closeMessageOnClick);
       errorMessage.remove();
       error = false;
     }
-    document.removeEventListener('keydown', onMessageEscPress);
+    document.removeEventListener('keydown', closeMessageOnEsc);
   };
 
   // закрытие по клику
-  var onMessageClick = function (evt) {
+  var closeMessageOnClick = function (evt) {
     evt.preventDefault();
     deleteMessage();
   };
 
   // закрытие по esc
-  var onMessageEscPress = function (evt) {
+  var closeMessageOnEsc = function (evt) {
     evt.preventDefault();
     if (evt.keyCode === window.util.ESC_KEYCODE) {
       deleteMessage();

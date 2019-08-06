@@ -1,13 +1,13 @@
 'use strict';
 
 (function () {
-  var FlatPrices = {
+  var offerTypeToMinPrice = {
     'bungalo': 0,
     'house': 5000,
     'flat': 1000,
     'palace': 10000
   };
-  var StartPointsMainPin = {
+  var MainPinInitialRect = {
     'LEFT': 570,
     'TOP': 375
   };
@@ -23,7 +23,7 @@
   var submitButton = window.util.adForm.querySelector('.ad-form__submit');
 
   // устанавливаю значения по умолчанию для количества мест в одной комнате
-  var getсapacityNumber = function () {
+  var setCapacityNumber = function () {
     сapacityNumber.value = '1';
     for (var i = 0; i < сapacityNumber.children.length; i++) {
       сapacityNumber.children[i].disabled = true;
@@ -31,7 +31,7 @@
     сapacityNumber.querySelector('option[value="1"]').disabled = false;
   };
 
-  getсapacityNumber();
+  setCapacityNumber();
 
   // блокирую поля с неподхожяим кол-вом гостей к выбранным комнатам
   roomNumber.addEventListener('change', function () {
@@ -62,18 +62,18 @@
   };
 
   var getMainStartAddress = function (size) {
-    var x = StartPointsMainPin.LEFT + size / 2;
-    var y = StartPointsMainPin.TOP + size / 2;
+    var x = MainPinInitialRect.LEFT + size / 2;
+    var y = MainPinInitialRect.TOP + size / 2;
     return (x + ', ' + y);
   };
 
   var getMainAddress = function (width, height) {
-    var x = StartPointsMainPin.LEFT + width / 2;
-    var y = StartPointsMainPin.TOP + height;
+    var x = MainPinInitialRect.LEFT + width / 2;
+    var y = MainPinInitialRect.TOP + height;
     return (x + ', ' + y);
   };
 
-  var getDisabledElements = function (arr) {
+  var disableElements = function (arr) {
     for (var i = 0; i < arr.length; i++) {
       arr[i].disabled = true;
     }
@@ -84,7 +84,7 @@
   };
 
   // дезакцивация страницы
-  var getDeactivatedPage = function () {
+  var deactivatePage = function () {
     if (!window.util.map.classList.contains('map--faded')) {
       window.util.map.classList.add('map--faded');
     }
@@ -92,13 +92,13 @@
     if (!window.util.adForm.classList.contains('ad-form--disabled')) {
       window.util.adForm.classList.add('ad-form--disabled');
     }
-    getDisabledElements(window.util.disabledElements);
+    disableElements(window.util.disabledElements);
     window.util.address.value = getMainStartAddress(window.util.MAIN_ROUND_PIN_SIZE);
   };
 
   selectTypeFlat.addEventListener('change', function () {
     var valueFlat = selectTypeFlat.options[selectTypeFlat.selectedIndex].value;
-    minPrice.min = FlatPrices[valueFlat];
+    minPrice.min = offerTypeToMinPrice[valueFlat];
     minPrice.placeholder = minPrice.min;
     minPrice.setCustomValidity('');
   });
@@ -119,8 +119,8 @@
     window.pin.removePins();
     window.util.mapFilters.reset();
     window.pin.moveMainPinToCenter();
-    getDeactivatedPage();
-    getсapacityNumber();
+    deactivatePage();
+    setCapacityNumber();
     window.util.activePage = false;
   });
 
@@ -140,13 +140,13 @@
     }
   });
 
-  getDisabledElements(window.util.disabledElements);
+  disableElements(window.util.disabledElements);
   window.util.address.value = getMainStartAddress(window.util.MAIN_ROUND_PIN_SIZE);
 
   window.form = {
     getMainAddress: getMainAddress,
-    getDeactivatedPage: getDeactivatedPage,
-    getсapacityNumber: getсapacityNumber
+    deactivatePage: deactivatePage,
+    setCapacityNumber: setCapacityNumber
   };
 
 })();
