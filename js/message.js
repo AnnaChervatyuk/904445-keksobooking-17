@@ -36,7 +36,7 @@
     window.util.mapFilters.reset();
     window.pin.moveMainPinToCenter();
     window.form.deactivatePage();
-    window.form.getсapacityNumber();
+    window.form.setCapacityNumber();
     window.util.activePage = false;
   };
 
